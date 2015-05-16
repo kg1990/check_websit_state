@@ -4,10 +4,10 @@
 #使用方法
 
 执行
-    bundle install
-    god
-    god load keepalive.god
-    god start singleton
+        bundle install
+        god
+        god load keepalive.god
+        god start singleton
     
 配置好smtp中的各个参数，常驻进程会在每分钟内进行访问网站，查看网站是否正常。
 
