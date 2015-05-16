@@ -4,6 +4,7 @@
 #使用方法
 
 执行
+
     bundle install
     god
     god load keepalive.god
