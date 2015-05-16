@@ -1,0 +1,98 @@
+#!/usr/bin/env ruby
+DAEMON_ROOT = File.expand_path('../', __FILE__)
+require 'rubygems' unless defined?(Gem)
+require 'forever'
+require "#{DAEMON_ROOT}/config.rb"
+require 'rest-client'
+require 'net/smtp'
+
+Forever.run :fork => false do
+  ##
+  # You can set these values:
+  #
+  dir DAEMON_ROOT
+  #file __FILE__
+  # log File.expand_path(dir, '/log/[file_name].log')
+  # pid File.expand_path(dir, '/tmp/[file_name].pid')
+  #
+
+  on_error do |e|
+    raise e
+  end
+
+  on_exit do
+    puts "Bye bye"
+  end
+
+  before :all do
+    @access_log_path = "#{DAEMON_ROOT}/log/#{Time.now.strftime('%Y%m%d')}"
+    @smtp_address = 'your smtp address'
+    @smtp_host = 'you smtp host'
+    @port = 25 #you smtp port
+    @username = 'your use name'
+    @password = 'your password'
+    @form_user = 'from email'
+    @to_user = 'to_email'
+  end
+
+  every 60.seconds, :last => Time.now do
+    url = 'www.baidu.com'
+    begin
+      res = RestClient::Request.execute(:method => :get, :url => url, :timeout => 10, :open_timeout => 10)
+      if res.code == 200
+        raise Exception.new('OK')
+      else
+        raise Exception.new('NG response code is ' + res.code)
+      end
+    rescue RestClient::RequestTimeout => e
+      msg = "host #{url} NG can not response in 20 seconds at #{Time.now.strftime('%Y-%m-%d %H:%M:%S')}"
+      File.open(@access_log_path, 'a') do |f|
+        f.puts(msg)
+      end
+      Net::SMTP.start(@smtp_addres, @port, @smtp_host, @username, @password, :login) do |smtp|
+        smtp.send_message msg, @from_user, @to_user
+      end
+    rescue Exception => e
+      msg = "host #{url} #{e.message} at #{Time.now.strftime('%Y-%m-%d %H:%M:%S')}"
+      File.open(@access_log_path, 'a') do |f|
+        f.puts(msg)
+      end
+      unless e.message == 'OK'
+        Net::SMTP.start(@smtp_addres, @port, @smtp_host, @username, @password, :login) do |smtp|
+          smtp.send_message msg, @from_user, @to_user
+        end
+      end
+    end
+  end
+
+  every 60.seconds, :last => Time.now do
+    url = 'www.google.com'
+    begin
+      res = RestClient::Request.execute(:method => :get, :url => url, :timeout => 10, :open_timeout => 10)
+      if res.code == 200
+        raise Exception.new('OK')
+      else
+        raise Exception.new('NG response code is ' + res.code)
+      end
+    rescue RestClient::RequestTimeout => e
+      msg = "host #{url} NG can not response in 20 seconds at #{Time.now.strftime('%Y-%m-%d %H:%M:%S')}"
+      File.open(@access_log_path, 'a') do |f|
+        f.puts(msg)
+      end
+      Net::SMTP.start(@smtp_addres, @port, @smtp_host, @username, @password, :login) do |smtp|
+        smtp.send_message msg, @from_user, @to_user
+      end
+    rescue Exception => e
+      msg = "host #{url} #{e.message} at #{Time.now.strftime('%Y-%m-%d %H:%M:%S')}"
+      File.open(@access_log_path, 'a') do |f|
+        f.puts(msg)
+      end
+      unless e.message == 'OK'
+        Net::SMTP.start(@smtp_addres, @port, @smtp_host, @username, @password, :login) do |smtp|
+          smtp.send_message msg, @from_user, @to_user
+        end
+      end
+    end
+  end
+
+end
