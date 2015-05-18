@@ -31,7 +31,7 @@ Forever.run :fork => false do
     @port = 25 #you smtp port
     @username = 'your use name'
     @password = 'your password'
-    @form_user = 'from email'
+    @from_user = 'from email'
     @to_user = 'to_email'
   end
 
@@ -49,7 +49,7 @@ Forever.run :fork => false do
       File.open(@access_log_path, 'a') do |f|
         f.puts(msg)
       end
-      Net::SMTP.start(@smtp_addres, @port, @smtp_host, @username, @password, :login) do |smtp|
+      Net::SMTP.start(@smtp_address, @port, @smtp_host, @username, @password, :login) do |smtp|
         smtp.send_message msg, @from_user, @to_user
       end
     rescue Exception => e
@@ -58,7 +58,7 @@ Forever.run :fork => false do
         f.puts(msg)
       end
       unless e.message == 'OK'
-        Net::SMTP.start(@smtp_addres, @port, @smtp_host, @username, @password, :login) do |smtp|
+        Net::SMTP.start(@smtp_address, @port, @smtp_host, @username, @password, :login) do |smtp|
           smtp.send_message msg, @from_user, @to_user
         end
       end
@@ -79,7 +79,7 @@ Forever.run :fork => false do
       File.open(@access_log_path, 'a') do |f|
         f.puts(msg)
       end
-      Net::SMTP.start(@smtp_addres, @port, @smtp_host, @username, @password, :login) do |smtp|
+      Net::SMTP.start(@smtp_address, @port, @smtp_host, @username, @password, :login) do |smtp|
         smtp.send_message msg, @from_user, @to_user
       end
     rescue Exception => e
@@ -88,7 +88,7 @@ Forever.run :fork => false do
         f.puts(msg)
       end
       unless e.message == 'OK'
-        Net::SMTP.start(@smtp_addres, @port, @smtp_host, @username, @password, :login) do |smtp|
+        Net::SMTP.start(@smtp_address, @port, @smtp_host, @username, @password, :login) do |smtp|
           smtp.send_message msg, @from_user, @to_user
         end
       end
